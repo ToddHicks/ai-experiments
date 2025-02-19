@@ -257,9 +257,9 @@ def take_turn():
         move = choose_action(game)
         game.board[move // 3, move % 3] = 1
         game.state_action_pairs.append((prev_state, move))
-        next_state = get_state(game.board)
         game.turns_played += 1
         winner = check_winner(game.board)
+    next_state = get_state(game.board)
     board = game.board
 
     if winner is not None:
