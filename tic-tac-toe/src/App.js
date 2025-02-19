@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import { Button } from "./components/ui/Button";
 import { Card, CardContent } from "./components/ui/Card";
 
-//const API_BASE = "https://ai-experiments-1196.onrender.com";
-const API_BASE = "http://127.0.0.1:5009";
+const API_BASE = "https://ai-experiments-1196.onrender.com";
+//const API_BASE = "http://127.0.0.1:5009";
 
 const TicTacToe = () => {
   const [gameId, setGameId] = useState(null);
