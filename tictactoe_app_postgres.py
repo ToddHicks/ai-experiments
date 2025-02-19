@@ -35,9 +35,14 @@ model = SGDRegressor(max_iter=1000, tol=1e-3)
 game_count = 0
 debug = True
 
-DATABASE_URL = os.getenv("DATABASE_INTERNAL_URL")  # Replace with your database info
+# Initialize DB connection
+# Pulled from the host.
+DATABASE_URL = os.getenv("DATABASE_INTERNAL_URL")
 
 Base = declarative_base()
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(bind=engine)
+Base.metadata.create_all(engine)  # Create table if it doesn't exist
 
 class QTable(Base):
     __tablename__ = 'q_table'
@@ -62,12 +67,6 @@ class GameStats(Base):
     game = Column(Integer, nullable=False)
     turns = Column(Integer, nullable=False)
     winner = Column(Integer, nullable=False)  # -1 (player), 1 (AI), 0 (tie)
-
-# Initialize DB connection
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(bind=engine)
-Base.metadata.create_all(engine)  # Create table if it doesn't exist
-
 
 # this map will be stored as games[id] = game_object
 # usually, games[id].board will be most common access.
