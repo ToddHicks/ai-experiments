@@ -28,9 +28,9 @@ This is my first attempt at 2 things.
 2. Creating a learning algorithm.
 With minimal testing both show signs of working.
 """
-alpha=1.0
-gamma=0.9 
-epsilon=0.01
+alpha=0.9
+gamma=0.8
+epsilon=0.1
 
 scaler = StandardScaler()
 model = SGDRegressor(max_iter=1000, tol=1e-3)
@@ -155,7 +155,7 @@ def update_q_table(state, action, reward, next_state, turns_played):
     # Compute Q-value update
     max_next_q = max([get_q_value(next_state, a) for a in range(9)], default=0)
     q_old = get_q_value(state, action)
-    reward += turns_played * 0.1  # Reward for prolonging the game
+    reward += turns_played * 0.01  # Reward for prolonging the game
     q_update = (1 - alpha) * q_old + alpha * (reward + gamma * max_next_q)
     
     if q_entry:
