@@ -263,7 +263,6 @@ def take_turn():
         for state, action in game.state_action_pairs:
             update_q_table(state, action, winner, next_state, game.turns_played)
         update_game_stats(game_count, game, winner)
-        save_game_stats()
         with games_lock:
             del games[game_id]
     return jsonify({"message": "Turn Successful", "board": str(board), "winner": winner})
