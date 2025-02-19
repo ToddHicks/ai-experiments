@@ -35,7 +35,7 @@ model = SGDRegressor(max_iter=1000, tol=1e-3)
 game_count = 0
 debug = True
 
-DATABASE_URL = os.getenv("DATABASE_URL_INTERNAL")  # Replace with your database info
+DATABASE_URL = os.getenv("DATABASE_INTERNAL_URL")  # Replace with your database info
 
 Base = declarative_base()
 
