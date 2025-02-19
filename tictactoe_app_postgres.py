@@ -1,8 +1,10 @@
 import os
 
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app, origins=["https://ai-experiments-ui.onrender.com"])
 
 import argparse
 import random
