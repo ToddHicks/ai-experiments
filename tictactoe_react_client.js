@@ -15,8 +15,16 @@ const TicTacToe = () => {
     try {
       const response = await fetch(`${API_BASE}/new`, { method: "POST" });
       const data = await response.json();
+      console.log(data);
       setGameId(data.game_id);
-      setBoard(JSON.parse(data.board));
+      let fixedBoard = data.board
+        .replace(/\n/g, " ") // Replace newlines with spaces
+        .replace(/\s+/g, ",") // Replace spaces with commas
+        .replace(/\[|]/g, "") // Remove square brackets
+        .split(",") // Split into an array
+        .map(Number); // Convert to numbers
+      console.log(fixedBoard);
+      setBoard(fixedBoard);
       setWinner(null);
     } catch (error) {
       console.error("Error starting game:", error);
@@ -27,18 +35,33 @@ const TicTacToe = () => {
   const makeMove = async (index) => {
     if (winner || board[index] !== 0) return;
     setLoading(true);
+
     try {
       const response = await fetch(`${API_BASE}/act`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ game_id: gameId, action: index }),
       });
+
       const data = await response.json();
-      setBoard(JSON.parse(data.board));
+      console.log(data);
+
+      // Ensure `data.board` is properly formatted
+      let fixedBoard = data.board
+        .replace(/[\[\]\n]/g, "") // Remove brackets and newlines
+        .trim() // Remove leading/trailing spaces
+        .split(/\s+/) // Split by whitespace
+        .map(Number); // Convert to numbers
+
+      console.log(fixedBoard);
+
+      setBoard(fixedBoard.slice(0, 9));
+
       setWinner(data.winner);
     } catch (error) {
       console.error("Error making move:", error);
     }
+
     setLoading(false);
   };
 
@@ -52,17 +75,23 @@ const TicTacToe = () => {
       )}
       {gameId && (
         <Card className="p-4 mt-4">
-          <CardContent className="grid grid-cols-3 gap-2">
-            {board.map((cell, index) => (
-              <Button
-                key={index}
-                className="h-16 w-16 text-xl"
-                onClick={() => makeMove(index)}
-                disabled={cell !== 0 || winner !== null || loading}
-              >
-                {cell === 1 ? "X" : cell === -1 ? "O" : ""}
-              </Button>
-            ))}
+          <CardContent className="flex flex-col gap-2">
+            {Array(3)
+              .fill(0)
+              .map((_, row) => (
+                <div key={row} className="flex gap-2">
+                  {board.slice(row * 3, row * 3 + 3).map((cell, col) => (
+                    <Button
+                      key={row * 3 + col}
+                      className="h-48 w-48 text-5xl flex items-center justify-center"
+                      onClick={() => makeMove(row * 3 + col)}
+                      disabled={cell !== 0 || winner !== null || loading}
+                    >
+                      {cell === 1 ? "X" : cell === -1 ? "O" : "\u00A0"}
+                    </Button>
+                  ))}
+                </div>
+              ))}
           </CardContent>
         </Card>
       )}
@@ -73,6 +102,9 @@ const TicTacToe = () => {
             : winner === -1
             ? "You Win!"
             : "It's a Tie!"}
+          <Button onClick={startGame} disabled={loading}>
+            Start Game
+          </Button>
         </p>
       )}
     </div>
