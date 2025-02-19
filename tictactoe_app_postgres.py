@@ -285,4 +285,6 @@ if __name__ == "__main__":
     load_game_stats()
     debug = args.debug
     threading.Thread(target=cleanup_games, daemon=True).start()
-    app.run(host='127.0.0.1', port=5009, debug=True)  # Runs locally on port 5000
+    port = int(os.getenv("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
+    #app.run(host='127.0.0.1', port=5009, debug=True)  # Runs locally on port 5000
