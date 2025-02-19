@@ -213,7 +213,7 @@ def create_game():
     global game_count, games, games_lock
     with games_lock:
         print('Creating new game!')
-        game_id=random.getrandbits(128)
+        game_id=random.getrandbits(53)
         games[game_id] = TicTacToeQLearning()
         game_count += 1
         board = str(games[game_id].board)
