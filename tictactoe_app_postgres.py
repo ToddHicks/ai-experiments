@@ -250,16 +250,18 @@ def take_turn():
     game.board[move // 3, move % 3] = -1
     game.state_action_pairs.append((prev_state, move))
     game.turns_played += 1
+    winner = check_winner(game.board)
     # Computers turn
-    prev_state = get_state(game.board)
-    move = choose_action(game)
-    game.board[move // 3, move % 3] = 1
-    game.state_action_pairs.append((prev_state, move))
-    next_state = get_state(game.board)
-    game.turns_played += 1
+    if (winner == None):
+        prev_state = get_state(game.board)
+        move = choose_action(game)
+        game.board[move // 3, move % 3] = 1
+        game.state_action_pairs.append((prev_state, move))
+        next_state = get_state(game.board)
+        game.turns_played += 1
+        winner = check_winner(game.board)
     board = game.board
 
-    winner = check_winner(game.board)
     if winner is not None:
         for state, action in game.state_action_pairs:
             update_q_table(state, action, winner, next_state, game.turns_played)
