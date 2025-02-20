@@ -207,6 +207,34 @@ def check_winner(board):
     return None
 
 ### End point calls here.
+@app.route('/stats', methods=['GET'])
+def get_stats():
+    """
+    Method will return the recent game stats from PostgreSQL.
+    """
+    session = SessionLocal()
+    # Total games played
+    total_games = session.query(GameStats).count()
+
+    # Get the last 10 games ordered by most recent
+    last_10_games = session.query(GameStats.winner).order_by(GameStats.id.desc()).limit(10).all()
+
+    # Extract winners from the last 10 games
+    last_10_winners = [game.winner for game in last_10_games]
+
+    # Count the results
+    wins = last_10_winners.count(1)
+    losses = last_10_winners.count(-1)
+    ties = last_10_winners.count(0)
+    session.close()
+
+    return jsonify({
+        "games_played": total_games,
+        "last_10_wins": wins,
+        "last_10_losses": losses,
+        "last_10_ties": ties
+    })
+
 @app.route('/new', methods=['POST'])
 def create_game():
     """

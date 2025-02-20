@@ -7,7 +7,6 @@ import random
 import sys
 import threading
 import time
-import os
 
 import numpy as np
 import pandas as pd
@@ -172,6 +171,23 @@ def check_winner(board):
     return None
 
 ### End point calls here.
+@app.route('/stats', methods=['GET'])
+def get_stats():
+    """
+    Method will return the recent game stats.
+    """
+    global game_stats
+    with stats_lock:
+        total_games = len(game_stats)
+        # Get the last 10 games
+        last_10_games = game_stats.tail(10)
+
+        # Count the results 
+        wins = int((last_10_games['winner'] == 1).sum())
+        losses = int((last_10_games['winner'] == -1).sum())
+        ties = int((last_10_games['winner'] == 0).sum())
+        return jsonify({"games_played": total_games, "last_10_wins": wins, "last_10_losses": losses, "last_10_ties": ties})
+
 @app.route('/new', methods=['POST'])
 def create_game():
     """
@@ -180,7 +196,7 @@ def create_game():
     global game_count, games, games_lock
     with games_lock:
         print('Creating new game!')
-        game_id=random.getrandbits(128)
+        game_id=random.getrandbits(53)
         games[game_id] = TicTacToeQLearning()
         game_count += 1
         board = str(games[game_id].board)
@@ -256,6 +272,4 @@ if __name__ == "__main__":
     load_game_stats()
     debug = args.debug
     threading.Thread(target=cleanup_games, daemon=True).start()
-    port = int(os.getenv("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
-    #app.run(host='127.0.0.1', port=5009, debug=True)  # Runs locally on port 5000
+    app.run(host='127.0.0.1', port=5009, debug=True)  # Runs locally on port 5000

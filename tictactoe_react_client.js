@@ -1,8 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+//import { Button } from "@/components/ui/button";
+//import { Card, CardContent } from "@/components/ui/card";
 import React, { useState } from "react";
+import { Button } from "./components/ui/Button";
+import { Card, CardContent } from "./components/ui/Card";
 
-const API_BASE = "https://ai-experiments-1196.onrender.com";
+//const API_BASE = "https://ai-experiments-1196.onrender.com";
+const API_BASE = "http://127.0.0.1:5009";
 
 const TicTacToe = () => {
   const [gameId, setGameId] = useState(null);
@@ -83,7 +86,7 @@ const TicTacToe = () => {
                   {board.slice(row * 3, row * 3 + 3).map((cell, col) => (
                     <Button
                       key={row * 3 + col}
-                      className="h-48 w-48 text-5xl flex items-center justify-center"
+                      className="h-16 w-16 text-3xl flex items-center justify-center"
                       onClick={() => makeMove(row * 3 + col)}
                       disabled={cell !== 0 || winner !== null || loading}
                     >
