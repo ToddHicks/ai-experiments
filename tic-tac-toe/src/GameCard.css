@@ -1,0 +1,92 @@
+/* GameCard.css */
+
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.game-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.game-stats {
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.game-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.game-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.game-row {
+  display: flex;
+  gap: 10px;
+}
+
+.game-cell {
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.game-cell:hover {
+  background: #ddd;
+}
+
+.game-cell:disabled {
+  cursor: not-allowed;
+  background: #e0e0e0;
+}
+
+.game-result {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.custom-button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 10px;
+}
+
+.custom-button:hover {
+  background: #0056b3;
+}
+
+.custom-button:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}

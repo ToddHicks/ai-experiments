@@ -1,34 +1,37 @@
-//import { Button } from "@/components/ui/button";
-//import { Card, CardContent } from "@/components/ui/card";
 import React, { useState } from "react";
-import { Button } from "./components/ui/Button";
-import { Card, CardContent } from "./components/ui/Card";
+import "./GameCard.css";
 
-const API_BASE = "https://ai-experiments-1196.onrender.com";
-//const API_BASE = "http://127.0.0.1:5009";
+const API_BASE = "http://127.0.0.1:5009";
 
 const TicTacToe = () => {
   const [gameId, setGameId] = useState(null);
   const [board, setBoard] = useState(Array(9).fill(0));
   const [winner, setWinner] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState({
+    games_played: 0,
+    wins: 0,
+    losses: 0,
+    ties: 0,
+  });
 
   const startGame = async () => {
     setLoading(true);
     try {
       const response = await fetch(`${API_BASE}/new`, { method: "POST" });
       const data = await response.json();
-      console.log(data);
+
       setGameId(data.game_id);
-      let fixedBoard = data.board
-        .replace(/\n/g, " ") // Replace newlines with spaces
-        .replace(/\s+/g, ",") // Replace spaces with commas
-        .replace(/\[|]/g, "") // Remove square brackets
-        .split(",") // Split into an array
-        .map(Number); // Convert to numbers
-      console.log(fixedBoard);
-      setBoard(fixedBoard);
+      setBoard(parseBoard(data.board));
       setWinner(null);
+      const statsResponse = await fetch(`${API_BASE}/stats`, { method: "GET" });
+      const statsData = await statsResponse.json();
+      setStats({
+        games_played: statsData.games_played,
+        wins: statsData.last_10_wins,
+        losses: statsData.last_10_losses,
+        ties: statsData.last_10_ties,
+      });
     } catch (error) {
       console.error("Error starting game:", error);
     }
@@ -47,68 +50,75 @@ const TicTacToe = () => {
       });
 
       const data = await response.json();
-      console.log(data);
-
-      // Ensure `data.board` is properly formatted
-      let fixedBoard = data.board
-        .replace(/[\[\]\n]/g, "") // Remove brackets and newlines
-        .trim() // Remove leading/trailing spaces
-        .split(/\s+/) // Split by whitespace
-        .map(Number); // Convert to numbers
-
-      console.log(fixedBoard);
-
-      setBoard(fixedBoard.slice(0, 9));
-
+      setBoard(parseBoard(data.board));
       setWinner(data.winner);
     } catch (error) {
       console.error("Error making move:", error);
     }
-
     setLoading(false);
   };
 
+  const parseBoard = (boardString) => {
+    // This should be able to be cleaned up on the server side.
+    return boardString
+      .replace(/[\[\]\n]/g, "")
+      .trim()
+      .split(/\s+/)
+      .map(Number);
+  };
+
   return (
-    <div className="flex flex-col items-center p-4">
-      <h1 className="text-xl font-bold mb-4">Tic-Tac-Toe AI</h1>
-      {!gameId && (
-        <Button onClick={startGame} disabled={loading}>
+    <div className="game-container">
+      <h1 className="game-title">Tic-Tac-Toe AI</h1>
+      <p className="game-stats">
+        Total Games: {stats.games_played}. Last 10 Games: {stats.wins} Wins,{" "}
+        {stats.losses} Losses, {stats.ties} Ties.
+      </p>
+      {!gameId ? (
+        <button
+          className="custom-button"
+          onClick={startGame}
+          disabled={loading}
+        >
           Start Game
-        </Button>
-      )}
-      {gameId && (
-        <Card className="p-4 mt-4">
-          <CardContent className="flex flex-col gap-2">
-            {Array(3)
-              .fill(0)
-              .map((_, row) => (
-                <div key={row} className="flex gap-2">
-                  {board.slice(row * 3, row * 3 + 3).map((cell, col) => (
-                    <Button
-                      key={row * 3 + col}
-                      className="h-48 w-48 text-5xl flex items-center justify-center"
-                      onClick={() => makeMove(row * 3 + col)}
-                      disabled={cell !== 0 || winner !== null || loading}
-                    >
-                      {cell === 1 ? "X" : cell === -1 ? "O" : "\u00A0"}
-                    </Button>
-                  ))}
-                </div>
-              ))}
-          </CardContent>
-        </Card>
+        </button>
+      ) : (
+        <div className="game-card">
+          <div className="game-card-content">
+            {Array.from({ length: 3 }, (_, row) => (
+              <div key={row} className="game-row">
+                {board.slice(row * 3, row * 3 + 3).map((cell, col) => (
+                  <button
+                    key={row * 3 + col}
+                    className="game-cell"
+                    onClick={() => makeMove(row * 3 + col)}
+                    disabled={cell !== 0 || winner !== null || loading}
+                  >
+                    {cell === 1 ? "X" : cell === -1 ? "O" : " "}
+                  </button>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
       )}
       {winner !== null && (
-        <p className="mt-4 text-lg font-bold">
-          {winner === 1
-            ? "AI Wins!"
-            : winner === -1
-            ? "You Win!"
-            : "It's a Tie!"}
-          <Button onClick={startGame} disabled={loading}>
-            Start Game
-          </Button>
-        </p>
+        <div className="game-result">
+          <p>
+            {winner === 1
+              ? "AI Wins!"
+              : winner === -1
+              ? "You Win!"
+              : "It's a Tie!"}
+          </p>
+          <button
+            className="custom-button"
+            onClick={startGame}
+            disabled={loading}
+          >
+            New Game
+          </button>
+        </div>
       )}
     </div>
   );
