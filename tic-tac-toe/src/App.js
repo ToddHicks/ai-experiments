@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./GameCard.css";
 
 // const API_BASE = "http://127.0.0.1:5009";
@@ -15,7 +15,24 @@ const TicTacToe = () => {
     losses: 0,
     ties: 0,
   });
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/stats`, { method: "GET" });
+        const data = await response.json();
+        setStats({
+          games_played: data.games_played,
+          wins: data.last_10_wins,
+          losses: data.last_10_losses,
+          ties: data.last_10_ties,
+        });
+      } catch (error) {
+        console.error("Error fetching stats:", error);
+      }
+    };
 
+    fetchStats();
+  }, []); // Empty dependency array ensures this runs only once
   const startGame = async () => {
     setLoading(true);
     try {
@@ -70,10 +87,13 @@ const TicTacToe = () => {
 
   return (
     <div className="game-container">
-      <h1 className="game-title">Tic-Tac-Toe AI</h1>
+      <h1 className="game-title">Tic-Tac-Toe Learning AI</h1>
       <p className="game-stats">
-        Total Games: {stats.games_played}. Last 10 Games: {stats.wins} Wins,{" "}
-        {stats.losses} Losses, {stats.ties} Ties.
+        Total Games: {stats.games_played} <br />
+        AI Stats for the last 10 games <br />
+        Wins: {stats.wins} <br />
+        Losses: {stats.losses} <br />
+        Ties: {stats.ties}
       </p>
       {!gameId ? (
         <button
