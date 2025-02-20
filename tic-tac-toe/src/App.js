@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import "./GameCard.css";
 
-const API_BASE = "http://127.0.0.1:5009";
+// const API_BASE = "http://127.0.0.1:5009";
+const API_BASE = "https://ai-experiments-1196.onrender.com";
 
 const TicTacToe = () => {
   const [gameId, setGameId] = useState(null);
