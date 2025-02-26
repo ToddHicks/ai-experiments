@@ -30,7 +30,7 @@ With minimal testing both show signs of working.
 """
 alpha=0.3
 gamma=0.9
-epsilon=0.001
+epsilon=0.00
 
 scaler = StandardScaler()
 model = SGDRegressor(max_iter=1000, tol=1e-3)
