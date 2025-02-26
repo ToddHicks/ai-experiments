@@ -69,7 +69,19 @@ const TicTacToe = () => {
 
       const data = await response.json();
       setBoard(parseBoard(data.board));
-      setWinner(data.winner);
+      if (data.winner) {
+        setWinner(data.winner);
+        const statsResponse = await fetch(`${API_BASE}/stats`, {
+          method: "GET",
+        });
+        const statsData = await statsResponse.json();
+        setStats({
+          games_played: statsData.games_played,
+          wins: statsData.last_10_wins,
+          losses: statsData.last_10_losses,
+          ties: statsData.last_10_ties,
+        });
+      }
     } catch (error) {
       console.error("Error making move:", error);
     }
