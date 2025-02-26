@@ -299,6 +299,22 @@ def take_turn():
             del games[game_id]
     return jsonify({"message": "Turn Successful", "board": str(board), "winner": winner})
 
+@app.route('/matrix', methods=['POST'])
+def get_matrix_choices():
+    global games 
+    data = request.json  # Get JSON data from request
+    print(data)
+    if not data:
+        return jsonify({"error": "Invalid input"}), 422
+    
+    game_id = data['game_id']
+    game = games[game_id]
+    available_moves = [i for i in range(9) if game.board.flatten()[i] == 0]
+    q_values = {action: get_q_value(get_state(game.board), action) for action in available_moves}
+    max_q = max(q_values.values(), default=float('-inf'))
+    best_moves = [action for action, q in q_values.items() if q == max_q]
+    return jsonify({"q_values": q_values, "max_q": max_q, "best_moves": best_moves})
+
 def cleanup_games():
     while True:
         time.sleep(60)  # Run every 60 seconds
