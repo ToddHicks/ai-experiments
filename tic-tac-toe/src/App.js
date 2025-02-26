@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./GameCard.css";
 
-// const API_BASE = "http://127.0.0.1:5009";
 const API_BASE = "https://ai-experiments-1196.onrender.com";
 
 const TicTacToe = () => {
@@ -9,12 +8,14 @@ const TicTacToe = () => {
   const [board, setBoard] = useState(Array(9).fill(0));
   const [winner, setWinner] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [logic, setLogic] = useState(null);
   const [stats, setStats] = useState({
     games_played: 0,
     wins: 0,
     losses: 0,
     ties: 0,
   });
+
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -32,9 +33,11 @@ const TicTacToe = () => {
     };
 
     fetchStats();
-  }, []); // Empty dependency array ensures this runs only once
+  }, []);
+
   const startGame = async () => {
     setLoading(true);
+    setLogic(null);
     try {
       const response = await fetch(`${API_BASE}/new`, { method: "POST" });
       const data = await response.json();
@@ -59,6 +62,7 @@ const TicTacToe = () => {
   const makeMove = async (index) => {
     if (winner || board[index] !== 0) return;
     setLoading(true);
+    setLogic(null);
 
     try {
       const response = await fetch(`${API_BASE}/act`, {
@@ -88,8 +92,26 @@ const TicTacToe = () => {
     setLoading(false);
   };
 
+  const getLogic = async () => {
+    if (!gameId) return;
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${API_BASE}/matrix`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ game_id: gameId }),
+      });
+
+      const data = await response.json();
+      setLogic(data);
+    } catch (error) {
+      console.error("Error fetching logic:", error);
+    }
+    setLoading(false);
+  };
+
   const parseBoard = (boardString) => {
-    // This should be able to be cleaned up on the server side.
     return boardString
       .replace(/[\[\]\n]/g, "")
       .trim()
@@ -133,6 +155,16 @@ const TicTacToe = () => {
               </div>
             ))}
           </div>
+          <button
+            className="custom-button"
+            onClick={getLogic}
+            disabled={loading}
+          >
+            Get Logic
+          </button>
+          {logic && (
+            <pre className="game-logic">{JSON.stringify(logic, null, 2)}</pre>
+          )}
         </div>
       )}
       {winner !== null && (
