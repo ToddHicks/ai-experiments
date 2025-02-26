@@ -69,7 +69,7 @@ const TicTacToe = () => {
 
       const data = await response.json();
       setBoard(parseBoard(data.board));
-      if (data.winner) {
+      if (data.winner != null) {
         setWinner(data.winner);
         const statsResponse = await fetch(`${API_BASE}/stats`, {
           method: "GET",
