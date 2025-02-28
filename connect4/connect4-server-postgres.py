@@ -1,4 +1,5 @@
 import argparse
+import logging
 import os
 import random
 import sys
@@ -11,6 +12,9 @@ from flask import Flask, jsonify, request
 from sqlalchemy import Column, Float, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+
+# trying to ensure logs are flushed.
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 app = Flask(__name__)
 
