@@ -35,7 +35,7 @@ session = Session()
 Base = declarative_base()
 
 class QTable(Base):
-    __tablename__ = 'q_table'
+    __tablename__ = 'q_table_connect4'
     state = Column(String, primary_key=True)
     action0 = Column(Float, default=0.0, nullable=False)
     action1 = Column(Float, default=0.0, nullable=False)
