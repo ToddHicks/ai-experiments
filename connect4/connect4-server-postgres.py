@@ -167,7 +167,7 @@ def take_turn():
     if winner is not None:
         reward = 1 if winner == 1 else -1
         for state, action in game.state_action_pairs:
-            update_q_table(state, action, reward, next_state if winner == 1 else state)
+            update_q_table(state, action, reward, next_state if winner == 1 else state, game.turns_played)
         record_game_stats(game_id, game.turns_played, int(winner))
         with games_lock:
             del games[game_id]
@@ -184,7 +184,7 @@ def cleanup_games():
                 if time.time() - games[game_id].last_active > 600:  # 10 minutes of inactivity
                     del games[game_id]
                     print(f"Game {game_id} removed due to inactivity.")
-                    
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--debug", action="store_true", help="Enable debug mode")

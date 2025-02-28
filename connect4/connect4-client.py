@@ -15,8 +15,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--debug", action="store_true", help="Enable debug mode")
     args = parser.parse_args()
-    #base = 'https://ai-experiments-1196.onrender.com'
-    base = "http://127.0.0.1:5010"
+    base = 'https://ai-experiments-connect4-server.onrender.com'
+    #base = "http://127.0.0.1:5010"
     
     while True:
         response = requests.post(f"{base}/new_connect4").json()
@@ -60,6 +60,6 @@ if __name__ == "__main__":
                     break
             except SystemExit:
                 raise # Quit
-            except Exception as e:
-                print(e)
-                print("Invalid input. Please enter a number between 0 and 6, or type 'QUIT' to quit:")
+            #except Exception as e:
+            #    print(e)
+            #    print("Invalid input. Please enter a number between 0 and 6, or type 'QUIT' to quit:")
