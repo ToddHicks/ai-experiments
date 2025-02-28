@@ -1,0 +1,8 @@
+Flask
+gunicorn
+pandas
+numpy
+scikit-learn
+sqlalchemy
+psycopg2-binary
+flask_cors
