@@ -63,7 +63,7 @@ class Connect4QLearning:
         self.last_active = time.time()
 
 def get_state(board):
-    return str(tuple(int(board.flatten())))
+    return str(tuple(map(int, board.flatten())))
 
 def get_q_value(state, action):
     q_row = session.query(QTable).filter_by(state=state).first()
