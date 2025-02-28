@@ -35,16 +35,16 @@ session = Session()
 Base = declarative_base()
 
 class QTable(Base):
-    __tablename__ = 'q_table_connect4'
+    __tablename__ = 'q_table'
     state = Column(String, primary_key=True)
-    action0 = Column(Float, default=0.0)
-    action1 = Column(Float, default=0.0)
-    action2 = Column(Float, default=0.0)
-    action3 = Column(Float, default=0.0)
-    action4 = Column(Float, default=0.0)
-    action5 = Column(Float, default=0.0)
-    action6 = Column(Float, default=0.0)
-    reward = Column(Float, default=0.0)
+    action0 = Column(Float, default=0.0, nullable=False)
+    action1 = Column(Float, default=0.0, nullable=False)
+    action2 = Column(Float, default=0.0, nullable=False)
+    action3 = Column(Float, default=0.0, nullable=False)
+    action4 = Column(Float, default=0.0, nullable=False)
+    action5 = Column(Float, default=0.0, nullable=False)
+    action6 = Column(Float, default=0.0, nullable=False)
+    reward = Column(Float, default=0.0, nullable=False)
 
 class GameStats(Base):
     __tablename__ = 'game_stats_connect4'
@@ -80,7 +80,7 @@ def update_q_table(state, action, reward, next_state, turns_played):
         q_row = QTable(state=state)
         session.add(q_row)
 
-    current_q = getattr(q_row, f'action{action}', 0.0)
+    current_q = getattr(q_row, f'action{action}', 0.0) or 0.0
     reward += turns_played * 0.01
     print(f'reward: {reward}')
     print(f'max_next_q: {max_next_q}')
