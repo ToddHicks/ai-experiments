@@ -1,5 +1,5 @@
 import argparse
-import logging
+#import logging
 import os
 import random
 import sys
@@ -14,7 +14,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # trying to ensure logs are flushed.
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+#logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 app = Flask(__name__)
 
@@ -82,9 +82,9 @@ def update_q_table(state, action, reward, next_state, turns_played):
 
     current_q = getattr(q_row, f'action{action}', 0.0) or 0.0
     reward += turns_played * 0.01
-    print(f'reward: {reward}')
-    print(f'max_next_q: {max_next_q}')
-    print(f'current_q: {current_q}')
+    #print(f'reward: {reward}')
+    #print(f'max_next_q: {max_next_q}')
+    #print(f'current_q: {current_q}')#
     new_q = current_q + alpha * (reward + gamma * max_next_q - current_q)
     setattr(q_row, f'action{action}', new_q)
 
