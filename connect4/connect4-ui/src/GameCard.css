@@ -43,13 +43,13 @@
   padding: 2rem;
   background-color: #f4f4f4;
 }
-.cell {
+.game-cell {
   width: 160px; /* 80px * 1.5 */
   height: 160px; /* 80px * 1.5 */
 }
 
 /* Adjust board size accordingly */
-.board {
+.game-card {
   grid-template-columns: repeat(7, 160px);
   grid-template-rows: repeat(6, 160px);
   gap: 15px; /* Increase gap a bit for balance */
