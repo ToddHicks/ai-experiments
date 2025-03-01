@@ -20,9 +20,9 @@ CORS(app, origins=["https://ai-experiments-connect4-ui.onrender.com"])
 # trying to ensure logs are flushed.
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
-alpha = 0.5 # Learns slowly over experiences.
-gamma = 0.5 # Value on future rewards
-epsilon = 0.05 # Randomness
+alpha = 0.7 # Learns slowly over experiences.
+gamma = 0.9 # Value on future rewards
+epsilon = 0.1 # Randomness
 turn_bonus = 0.75 # Bonus for longer turns (Eventually lower this to 0.25 or lower.)
 
 games = {}
