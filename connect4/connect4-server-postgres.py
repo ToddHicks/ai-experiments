@@ -9,9 +9,13 @@ import time
 import numpy as np
 import pandas as pd
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from sqlalchemy import Column, Float, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+
+app = Flask(__name__)
+CORS(app, origins=["https://ai-experiments-connect4-ui.onrender.com"])
 
 # trying to ensure logs are flushed.
 #logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -30,7 +34,6 @@ debug = True
 DATABASE_URL = os.getenv("DATABASE_INTERNAL_URL")
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine)
-session = Session()
 
 Base = declarative_base()
 
@@ -66,12 +69,15 @@ def get_state(board):
     return str(tuple(map(int, board.flatten())))
 
 def get_q_value(state, action):
+    session = Session()
     q_row = session.query(QTable).filter_by(state=state).first()
+    session.close()
     if q_row:
         return getattr(q_row, f'action{action}', random.uniform(-0.1, 0.1))
     return random.uniform(-0.1, 0.1)
 
 def update_q_table(state, action, reward, next_state, turns_played):
+    session = Session()
     next_q_row = session.query(QTable).filter_by(state=next_state).first()
     max_next_q = max([getattr(next_q_row, f'action{i}', 0.0) for i in range(7)]) if next_q_row else 0.0
 
@@ -89,11 +95,14 @@ def update_q_table(state, action, reward, next_state, turns_played):
     setattr(q_row, f'action{action}', new_q)
 
     session.commit()
+    session.close()
 
 def record_game_stats(game_id, turns_played, winner):
     game_stats = GameStats(game_id=str(game_id), turns_played=turns_played, winner=winner)
+    session = Session()
     session.add(game_stats)
     session.commit()
+    session.close()
 
 def choose_action(game):
     state = get_state(game.board)
@@ -181,6 +190,34 @@ def take_turn():
         return jsonify({"message": "Game over!", "board": board, "winner": int(winner)})
 
     return jsonify({"message": "Turn successful", "board": board, "winner": winner})
+
+@app.route('/stats', methods=['GET'])
+def get_stats():
+    """
+    Method will return the recent game stats from PostgreSQL.
+    """
+    session = Session()
+    # Total games played
+    total_games = session.query(GameStats).count()
+
+    # Get the last 10 games ordered by most recent
+    last_10_games = session.query(GameStats.winner).order_by(GameStats.id.desc()).limit(10).all()
+
+    # Extract winners from the last 10 games
+    last_10_winners = [game.winner for game in last_10_games]
+
+    # Count the results
+    wins = last_10_winners.count(1)
+    losses = last_10_winners.count(-1)
+    ties = last_10_winners.count(0)
+    session.close()
+
+    return jsonify({
+        "games_played": total_games,
+        "last_10_wins": wins,
+        "last_10_losses": losses,
+        "last_10_ties": ties
+    })
 
 def cleanup_games():
     while True:
