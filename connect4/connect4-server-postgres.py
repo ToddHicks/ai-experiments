@@ -71,8 +71,10 @@ def get_q_value(state, action):
     session = Session()
     q_row = session.query(QTable).filter_by(state=state).first()
     session.close()
+    print(f"State: {state}, Action: {action}, Q-Value: {q_row}")
     if q_row:
         return getattr(q_row, f'action{action}', random.uniform(-0.1, 0.1))
+
     return random.uniform(-0.1, 0.1)
 
 def update_q_table(state, action, reward, next_state, turns_played):
