@@ -95,6 +95,13 @@ const Connect4 = () => {
   return (
     <div className="game-container">
       <h1 className="game-title">Connect4 AI Game</h1>
+      <p className="game-stats">
+        Total Games: {stats.games_played} <br />
+        AI Stats for the last 10 games <br />
+        Wins: {stats.wins} <br />
+        Losses: {stats.losses} <br />
+        Ties: {stats.ties}
+      </p>
       {!gameId ? (
         <button
           className="custom-button"
