@@ -1,5 +1,5 @@
 import argparse
-#import logging
+import logging
 import os
 import random
 import sys
@@ -18,10 +18,10 @@ app = Flask(__name__)
 CORS(app, origins=["https://ai-experiments-connect4-ui.onrender.com"])
 
 # trying to ensure logs are flushed.
-#logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
-alpha = 0.9
-gamma = 0.8
+alpha = 0.4
+gamma = 0.9
 epsilon = 0.1
 
 games = {}
@@ -86,10 +86,11 @@ def update_q_table(state, action, reward, next_state, turns_played):
 
     current_q = getattr(q_row, f'action{action}', 0.0) or 0.0
     reward += turns_played * 0.01
-    #print(f'reward: {reward}')
+    print(f'reward: {reward}, max_next_q: {max_next_q}, current_q: {current_q}')
     #print(f'max_next_q: {max_next_q}')
     #print(f'current_q: {current_q}')#
-    new_q = current_q + alpha * (reward + gamma * max_next_q - current_q)
+    #new_q = current_q + alpha * (reward + gamma * max_next_q - current_q)
+    new_q = (1 - alpha) * current_q + alpha * (reward + gamma * max_next_q)
     setattr(q_row, f'action{action}', new_q)
 
     session.commit()
