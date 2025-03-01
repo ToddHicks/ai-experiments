@@ -20,8 +20,6 @@ CORS(app, origins=["https://ai-experiments-connect4-ui.onrender.com"])
 # trying to ensure logs are flushed.
 #logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
-app = Flask(__name__)
-
 alpha = 0.9
 gamma = 0.8
 epsilon = 0.1
