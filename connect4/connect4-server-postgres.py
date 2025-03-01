@@ -23,7 +23,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 alpha = 0.7 # Learns slowly over experiences.
 gamma = 0.9 # Value on future rewards
 epsilon = 0.1 # Randomness
-turn_bonus = 0.75 # Bonus for longer turns (Eventually lower this to 0.25 or lower.)
+turn_bonus = 0.5 # Bonus for longer turns 
 
 games = {}
 games_lock = threading.Lock()
@@ -88,9 +88,9 @@ def update_q_table(state, action, reward, next_state, turns_played):
         session.add(q_row)
 
     current_q = getattr(q_row, f'action{action}', 0.0) or 0.0
-    reward += (turns_played / 42) * turn_bonus
+    bonus = (turns_played / 42) * turn_bonus
     #new_q = current_q + alpha * (reward + gamma * max_next_q - current_q)
-    new_q = (1 - alpha) * current_q + alpha * (reward + gamma * max_next_q)
+    new_q = (1 - alpha) * current_q + alpha * (reward + gamma * max_next_q) + bonus
     # print(f'reward: {reward}, max_next_q: {max_next_q}, current_q: {current_q}, new_q: {new_q}')
     setattr(q_row, f'action{action}', new_q)
 
@@ -109,6 +109,8 @@ def choose_action(game):
     available_moves = [col for col in range(7) if game.board[0][col] == 0]
     is_exploration = random.uniform(0, 1) < epsilon
     if not is_exploration:
+        # I think we can do this more efficient, right now it queries the table for each action, yet it has all the actions on one query.
+        # This will require some reorganization, holding off making this change right now.
         q_values = {action: get_q_value(state, action) for action in available_moves}
         max_q = max(q_values.values(), default=float('-inf'))
         best_moves = [action for action, q in q_values.items() if q == max_q]
