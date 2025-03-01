@@ -190,7 +190,7 @@ def take_turn():
     if winner is not None:
         reward = 1 if winner == 1 else -1
         for state, action in game.state_action_pairs:
-            update_q_table(state, action, reward, next_state if winner == 1 else state, game.turns_played)
+            update_q_table(state, action, reward, state, game.turns_played)
         record_game_stats(game_id, game.turns_played, int(winner))
         with games_lock:
             del games[game_id]
