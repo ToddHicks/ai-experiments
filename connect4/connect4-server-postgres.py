@@ -20,10 +20,10 @@ CORS(app, origins=["https://ai-experiments-connect4-ui.onrender.com"])
 # trying to ensure logs are flushed.
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
-alpha = 0.4 # Learns slowly over experiences.
-gamma = 0.9 # Value on future rewards
+alpha = 0.5 # Learns slowly over experiences.
+gamma = 0.5 # Value on future rewards
 epsilon = 0.05 # Randomness
-turn_bonus = 0.5 # Bonus for longer turns (Eventually lower this to 0.25 or lower.)
+turn_bonus = 0.75 # Bonus for longer turns (Eventually lower this to 0.25 or lower.)
 
 games = {}
 games_lock = threading.Lock()
@@ -73,7 +73,7 @@ def get_q_value(state, action):
     session.close()
     # print(f"State: {state}, Action: {action}, Q-Value: {q_row}")
     if q_row:
-        return getattr(q_row, f'action{action}', random.uniform(-0.1, 0.1))
+        return getattr(q_row, f'action{action}')
 
     return random.uniform(-0.1, 0.1)
 
