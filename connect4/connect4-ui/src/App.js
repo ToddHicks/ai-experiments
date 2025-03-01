@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./GameCard.css";
 
 const API_BASE = "https://ai-experiments-connect4-server.onrender.com";
@@ -18,7 +18,7 @@ const Connect4 = () => {
     losses: 0,
     ties: 0,
   });
-  /*useEffect(() => {
+  useEffect(() => {
     const fetchStats = async () => {
       try {
         const response = await fetch(`${API_BASE}/stats`, { method: "GET" });
@@ -35,7 +35,7 @@ const Connect4 = () => {
     };
 
     fetchStats();
-  }, []);*/
+  }, []);
 
   const startGame = async () => {
     setLoading(true);
