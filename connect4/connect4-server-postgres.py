@@ -20,9 +20,10 @@ CORS(app, origins=["https://ai-experiments-connect4-ui.onrender.com"])
 # trying to ensure logs are flushed.
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
-alpha = 0.4
-gamma = 0.9
-epsilon = 0.1
+alpha = 0.2 # Learns slowly over experiences.
+gamma = 0.9 # Value on future rewards
+epsilon = 0.3 # Randomness
+turn_bonus = 0.5 # Bonus for longer turns (Eventually lower this to 0.25 or lower.)
 
 games = {}
 games_lock = threading.Lock()
@@ -85,7 +86,7 @@ def update_q_table(state, action, reward, next_state, turns_played):
         session.add(q_row)
 
     current_q = getattr(q_row, f'action{action}', 0.0) or 0.0
-    reward += (turns_played / 42) * 0.5
+    reward += (turns_played / 42) * turn_bonus
     #new_q = current_q + alpha * (reward + gamma * max_next_q - current_q)
     new_q = (1 - alpha) * current_q + alpha * (reward + gamma * max_next_q)
     # Ensure new_q stays in range.
@@ -107,12 +108,16 @@ def choose_action(game):
     state = get_state(game.board)
     available_moves = [col for col in range(7) if game.board[0][col] == 0]
     is_exploration = random.uniform(0, 1) < epsilon
-
-    q_values = {action: get_q_value(state, action) for action in available_moves}
-    max_q = max(q_values.values(), default=float('-inf'))
-    best_moves = [action for action, q in q_values.items() if q == max_q]
-
-    return random.choice(available_moves) if is_exploration else random.choice(best_moves)
+    if not is_exploration:
+        q_values = {action: get_q_value(state, action) for action in available_moves}
+        max_q = max(q_values.values(), default=float('-inf'))
+        best_moves = [action for action, q in q_values.items() if q == max_q]
+        print(f'Turn: {game.turns_played} Choice: {choice} Logic: {q_values}')
+        return random.choice(best_moves)
+    else:
+        choice = random.choice(available_moves)
+        print(f'Turn: {game.turns_played} Random Choice: {choice}')
+        return choice
 
 def drop_piece(board, col, piece):
     for row in range(5, -1, -1):
