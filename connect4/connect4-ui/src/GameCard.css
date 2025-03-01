@@ -43,3 +43,15 @@
   padding: 2rem;
   background-color: #f4f4f4;
 }
+.cell {
+  width: 120px; /* 80px * 1.5 */
+  height: 120px; /* 80px * 1.5 */
+}
+
+/* Adjust board size accordingly */
+.board {
+  grid-template-columns: repeat(7, 120px);
+  grid-template-rows: repeat(6, 120px);
+  gap: 15px; /* Increase gap a bit for balance */
+  padding: 1.5rem;
+}
