@@ -91,8 +91,6 @@ def update_q_table(state, action, reward, next_state, turns_played):
     reward += (turns_played / 42) * turn_bonus
     #new_q = current_q + alpha * (reward + gamma * max_next_q - current_q)
     new_q = (1 - alpha) * current_q + alpha * (reward + gamma * max_next_q)
-    # Ensure new_q stays in range.
-    new_q = max(min(new_q, 1), -1)
     # print(f'reward: {reward}, max_next_q: {max_next_q}, current_q: {current_q}, new_q: {new_q}')
     setattr(q_row, f'action{action}', new_q)
 
