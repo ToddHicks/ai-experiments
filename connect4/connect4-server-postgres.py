@@ -71,7 +71,7 @@ def get_q_value(state, action):
     session = Session()
     q_row = session.query(QTable).filter_by(state=state).first()
     session.close()
-    print(f"State: {state}, Action: {action}, Q-Value: {q_row}")
+    # print(f"State: {state}, Action: {action}, Q-Value: {q_row}")
     if q_row:
         return getattr(q_row, f'action{action}', random.uniform(-0.1, 0.1))
 
@@ -93,7 +93,7 @@ def update_q_table(state, action, reward, next_state, turns_played):
     new_q = (1 - alpha) * current_q + alpha * (reward + gamma * max_next_q)
     # Ensure new_q stays in range.
     new_q = max(min(new_q, 1), -1)
-    print(f'reward: {reward}, max_next_q: {max_next_q}, current_q: {current_q}, new_q: {new_q}')
+    # print(f'reward: {reward}, max_next_q: {max_next_q}, current_q: {current_q}, new_q: {new_q}')
     setattr(q_row, f'action{action}', new_q)
 
     session.commit()
@@ -115,11 +115,11 @@ def choose_action(game):
         max_q = max(q_values.values(), default=float('-inf'))
         best_moves = [action for action, q in q_values.items() if q == max_q]
         choice = random.choice(best_moves)
-        print(f'Turn: {game.turns_played} Choice: {choice} Logic: {q_values}')
+        # print(f'Turn: {game.turns_played} Choice: {choice} Logic: {q_values}')
         return choice
     else:
         choice = random.choice(available_moves)
-        print(f'Turn: {game.turns_played} Random Choice: {choice}')
+        # print(f'Turn: {game.turns_played} Random Choice: {choice}')
         return choice
 
 def drop_piece(board, col, piece):
