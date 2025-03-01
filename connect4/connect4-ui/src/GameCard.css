@@ -44,14 +44,13 @@
   background-color: #f4f4f4;
 }
 .game-cell {
-  width: 160px; /* 80px * 1.5 */
-  height: 160px; /* 80px * 1.5 */
+  width: 80px; /* 80px * 1.5 */
+  height: 80px; /* 80px * 1.5 */
 }
 
-/* Adjust board size accordingly */
 .game-card {
-  grid-template-columns: repeat(7, 160px);
-  grid-template-rows: repeat(6, 160px);
+  grid-template-columns: repeat(7, 80px);
+  grid-template-rows: repeat(6, 80px);
   gap: 15px; /* Increase gap a bit for balance */
   padding: 1.5rem;
 }
