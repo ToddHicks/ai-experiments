@@ -115,7 +115,7 @@ def choose_action(game):
         max_q = max(q_values.values(), default=float('-inf'))
         best_moves = [action for action, q in q_values.items() if q == max_q]
         choice = random.choice(best_moves)
-        print(f'Turn: {game.turns_played} Choice: {choice} Logic: {q_values}')
+        print(f'Turn: {game.turns_played} Choice: {choice} \nLogic: {q_values} \nState: {state}')
         return choice
     else:
         choice = random.choice(available_moves)
