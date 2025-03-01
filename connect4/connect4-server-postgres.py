@@ -20,7 +20,7 @@ CORS(app, origins=["https://ai-experiments-connect4-ui.onrender.com"])
 # trying to ensure logs are flushed.
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
-alpha = 0.2 # Learns slowly over experiences.
+alpha = 0.4 # Learns slowly over experiences.
 gamma = 0.9 # Value on future rewards
 epsilon = 0.05 # Randomness
 turn_bonus = 0.5 # Bonus for longer turns (Eventually lower this to 0.25 or lower.)
@@ -115,11 +115,11 @@ def choose_action(game):
         max_q = max(q_values.values(), default=float('-inf'))
         best_moves = [action for action, q in q_values.items() if q == max_q]
         choice = random.choice(best_moves)
-        # print(f'Turn: {game.turns_played} Choice: {choice} Logic: {q_values}')
+        print(f'Turn: {game.turns_played} Choice: {choice} Logic: {q_values}')
         return choice
     else:
         choice = random.choice(available_moves)
-        # print(f'Turn: {game.turns_played} Random Choice: {choice}')
+        print(f'Turn: {game.turns_played} Random Choice: {choice}')
         return choice
 
 def drop_piece(board, col, piece):
