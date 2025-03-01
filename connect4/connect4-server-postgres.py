@@ -51,9 +51,9 @@ class QTable(Base):
 class GameStats(Base):
     __tablename__ = 'game_stats_connect4'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    game_id = Column(String)
-    turns_played = Column(Integer)
-    winner = Column(Integer)
+    game_id = Column(String, nullable=False, unique=True)
+    turns_played = Column(Integer, nullable=False, default=0)
+    winner = Column(Integer, nullable=False)
 
 Base.metadata.create_all(engine)
 
@@ -156,50 +156,6 @@ def create_game():
         game_count =+ 1
         return jsonify({"message": "New Connect 4 game created!", "game_id": game_id, "board": board})
 
-'''
-I was incorrectly updating state and next_state. Leaving this code here until I can verify the fix.
-@app.route('/act_connect4', methods=['POST'])
-def take_turn():
-    data = request.json
-    if not data:
-        return jsonify({"error": "Invalid input"}), 422
-
-    game_id = data['game_id']
-    game = games.get(game_id)
-    if not game:
-        return jsonify({"error": "Game not found"}), 404
-
-    move = data['action']
-    if move < 0 or move > 6 or not drop_piece(game.board, move, -1):
-        return jsonify({"error": "Invalid move"}), 400
-
-    game.turns_played += 1
-    state = get_state(game.board)
-    game.state_action_pairs.append((state, move))
-
-    winner = check_winner(game.board)
-
-    if winner is None:
-        ai_move = choose_action(game)
-        drop_piece(game.board, ai_move, 1)
-        game.turns_played += 1
-        next_state = get_state(game.board)
-        game.state_action_pairs.append((next_state, ai_move))
-        winner = check_winner(game.board)
-
-    board = game.board.tolist()
-
-    if winner is not None:
-        reward = 1 if winner == 1 else -1
-        for state, action in game.state_action_pairs:
-            update_q_table(state, action, reward, state, game.turns_played)
-        record_game_stats(game_id, game.turns_played, int(winner))
-        with games_lock:
-            del games[game_id]
-        return jsonify({"message": "Game over!", "board": board, "winner": int(winner)})
-
-    return jsonify({"message": "Turn successful", "board": board, "winner": winner})
-'''
 @app.route('/act_connect4', methods=['POST'])
 def take_turn():
     data = request.json
