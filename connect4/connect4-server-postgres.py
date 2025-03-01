@@ -226,7 +226,7 @@ def take_turn():
         reward = -1  # Player win = bad for AI
         for state, action in game.state_action_pairs:
             update_q_table(state, action, reward, state, game.turns_played)
-        record_game_stats(game_id, game.turns_played, winner)
+        record_game_stats(game_id, game.turns_played, int(winner))
         with games_lock:
             del games[game_id]
         return jsonify({"message": "Game over!", "board": game.board.tolist(), "winner": int(winner)})
@@ -244,7 +244,7 @@ def take_turn():
         reward = 1 if winner == 1 else -1
         for state, action in game.state_action_pairs:
             update_q_table(state, action, reward, next_state, game.turns_played)
-        record_game_stats(game_id, game.turns_played, winner)
+        record_game_stats(game_id, game.turns_played, int(winner))
         with games_lock:
             del games[game_id]
         return jsonify({"message": "Game over!", "board": game.board.tolist(), "winner": int(winner)})
