@@ -85,12 +85,12 @@ def update_q_table(state, action, reward, next_state, turns_played):
         session.add(q_row)
 
     current_q = getattr(q_row, f'action{action}', 0.0) or 0.0
-    reward += turns_played * 0.01
-    print(f'reward: {reward}, max_next_q: {max_next_q}, current_q: {current_q}')
-    #print(f'max_next_q: {max_next_q}')
-    #print(f'current_q: {current_q}')#
+    rewards += (turns_played / 42) * 0.5
     #new_q = current_q + alpha * (reward + gamma * max_next_q - current_q)
     new_q = (1 - alpha) * current_q + alpha * (reward + gamma * max_next_q)
+    # Ensure new_q stays in range.
+    new_q = max(min(new_q, 1), -1)
+    print(f'reward: {reward}, max_next_q: {max_next_q}, current_q: {current_q}, new_q: {new_q}')
     setattr(q_row, f'action{action}', new_q)
 
     session.commit()
