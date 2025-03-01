@@ -156,6 +156,8 @@ def create_game():
         game_count =+ 1
         return jsonify({"message": "New Connect 4 game created!", "game_id": game_id, "board": board})
 
+'''
+I was incorrectly updating state and next_state. Leaving this code here until I can verify the fix.
 @app.route('/act_connect4', methods=['POST'])
 def take_turn():
     data = request.json
@@ -197,6 +199,61 @@ def take_turn():
         return jsonify({"message": "Game over!", "board": board, "winner": int(winner)})
 
     return jsonify({"message": "Turn successful", "board": board, "winner": winner})
+'''
+@app.route('/act_connect4', methods=['POST'])
+def take_turn():
+    data = request.json
+    if not data:
+        return jsonify({"error": "Invalid input"}), 422
+
+    game_id = data['game_id']
+    game = games.get(game_id)
+    if not game:
+        return jsonify({"error": "Game not found"}), 404
+
+    move = data['action']
+    if move < 0 or move > 6 or not drop_piece(game.board, move, -1):
+        return jsonify({"error": "Invalid move"}), 400
+
+    # Get current state and record player's move
+    state = get_state(game.board)
+    game.state_action_pairs.append((state, move))
+    game.turns_played += 1
+
+    # Check if player won
+    winner = check_winner(game.board)
+    if winner is not None:
+        reward = -1  # Player win = bad for AI
+        for state, action in game.state_action_pairs:
+            update_q_table(state, action, reward, state, game.turns_played)
+        record_game_stats(game_id, game.turns_played, winner)
+        with games_lock:
+            del games[game_id]
+        return jsonify({"message": "Game over!", "board": game.board.tolist(), "winner": int(winner)})
+
+    # AI takes a turn
+    ai_move = choose_action(game)
+    drop_piece(game.board, ai_move, 1)
+    next_state = get_state(game.board)
+    game.turns_played += 1
+    game.state_action_pairs.append((state, ai_move))  # Use current state for AI's action
+
+    # Check if AI won
+    winner = check_winner(game.board)
+    if winner is not None:
+        reward = 1 if winner == 1 else -1
+        for state, action in game.state_action_pairs:
+            update_q_table(state, action, reward, next_state, game.turns_played)
+        record_game_stats(game_id, game.turns_played, winner)
+        with games_lock:
+            del games[game_id]
+        return jsonify({"message": "Game over!", "board": game.board.tolist(), "winner": int(winner)})
+
+    # Update Q-table for intermediate moves (learning in non-terminal states)
+    update_q_table(state, move, 0, next_state, game.turns_played)
+
+    return jsonify({"message": "Turn successful", "board": game.board.tolist(), "winner": None})
+
 
 @app.route('/stats', methods=['GET'])
 def get_stats():
