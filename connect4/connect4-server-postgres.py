@@ -20,10 +20,10 @@ CORS(app, origins=["https://ai-experiments-connect4-ui.onrender.com"])
 # trying to ensure logs are flushed.
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
-alpha = 0.7 # Learns over experiences.
+alpha = 0.8 # Learns over experiences.
 gamma = 0.9 # Value on future rewards
 epsilon = 0.1 # Randomness
-turn_bonus = 1.5 # Bonus for longer turns 
+turn_bonus = 2.5 # Bonus for longer turns 
 
 games = {}
 games_lock = threading.Lock()
@@ -197,7 +197,7 @@ def take_turn():
     # Check if AI won
     winner = check_winner(game.board)
     if winner is not None:
-        reward = 1 if winner == 1 else -1
+        reward = 5 if winner == 1 else -1
         for state, action in game.state_action_pairs:
             update_q_table(state, action, reward, next_state, game.turns_played)
         record_game_stats(game_id, game.turns_played, int(winner))
