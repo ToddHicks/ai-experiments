@@ -73,6 +73,18 @@ class Connect4QLearning:
         self.turns_played = 0
         self.last_active = time.time()
 
+@app.before_request
+def handle_options():
+    if request.method == 'OPTIONS':
+        response = app.make_default_options_response()
+        headers = response.headers
+
+        headers['Access-Control-Allow-Origin'] = 'https://ai-experiments-connect4-ui.onrender.com'
+        headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS, DELETE'
+        headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+
+        return response
+
 def get_state(board):
     return str(tuple(map(int, board.flatten())))
 
