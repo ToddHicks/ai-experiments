@@ -30,9 +30,9 @@ CORS(app, origins=["https://ai-experiments-connect4-ui.onrender.com"])
 # trying to ensure logs are flushed.
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
-alpha = 0.2 # Learns over experiences.
+alpha = 0.4 # Learns over experiences.
 gamma = 0.5 # Value on future rewards
-epsilon = 0.10 # Randomness
+epsilon = 0.20 # Randomness
 
 games = {}
 games_lock = threading.Lock()
