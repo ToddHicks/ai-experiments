@@ -97,13 +97,15 @@ def update_q_table(state, action, reward, next_state, turns_played):
         session.add(q_row)
 
     current_q = getattr(q_row, f'action{action}', 0.0) or 0.0
-    new_q = current_q + alpha * (reward + gamma * max_next_q - current_q)
     if reward != 5: # We don't want to discourage winning quickly, so if it was a win condition. Skip this.
         reward = reward * ((43-turns_played)/42) - 0.001 # 43, to ensure we don't divide by 0.
-    if new_q > current_q:
+    new_q = current_q + alpha * (reward + gamma * max_next_q - current_q)
+    if current_q == 0.0:
+        new_q = new_q # if this is the first game, just use the new value.
+    elif new_q > current_q:
         new_q = (new_q + current_q) / 2
     else:
-        new_q = current_q - (new_q - current_q)
+        new_q = current_q - 0.01 #Only add slight penalties.
 
     print(f'reward: {reward}, max_next_q: {max_next_q}, current_q: {current_q}, new_q: {new_q}')
     setattr(q_row, f'action{action}', new_q)
@@ -211,7 +213,7 @@ def take_turn():
     # Check if AI won
     winner = check_winner(game.board)
     if winner is not None:
-        reward = 5 if winner == 1 else -0.5 # Greater reward for winning. Winning is rare and needs to be celebrated! -1 means a tie.
+        reward = 5 if winner == 1 else -0.5 # Greater reward for winning. Winning is rare and needs to be celebrated! -0.5 means a tie.
         for state, action in game.state_action_pairs:
             update_q_table(state, action, reward, next_state, game.turns_played)
         record_game_stats(game_id, game.turns_played, int(winner))
