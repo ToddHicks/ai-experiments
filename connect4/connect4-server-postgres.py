@@ -22,7 +22,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 alpha = 0.8 # Learns over experiences.
 gamma = 0.9 # Value on future rewards
-epsilon = 0.101 # Randomness
+epsilon = 0.01 # Randomness
 turn_bonus = 1.5 # Bonus for longer turns 
 
 games = {}
