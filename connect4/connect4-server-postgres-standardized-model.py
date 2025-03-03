@@ -109,7 +109,7 @@ def update_q_table(state, action, reward, next_state, turns_played):
         session.add(q_row)
 
     current_q = getattr(q_row, f'action{action}', 0.0) or 0.0
-    if reward >= 1: # We don't want to discourage winning quickly, so if it was a win condition. Skip this.
+    if reward < 1: # We don't want to discourage winning quickly, so if it was a win condition. Skip this.
         reward = reward * ((42-turns_played)/35) 
     new_q = current_q * (1-alpha) + alpha * (reward * (1-gamma) + gamma * max_next_q)
     if current_q == 0.0:
