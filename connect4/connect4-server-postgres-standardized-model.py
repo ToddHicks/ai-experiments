@@ -225,15 +225,13 @@ def take_turn():
     # Check if AI won
     winner = check_winner(game.board)
     if winner is not None:
-        # Set reward: 5 for winning move, -0.5 for tie, 1 for all previous moves
-        final_reward = 5 if winner == 1 else -0.5  # Last move gets the big reward/penalty
-        base_reward = 1 if winner == 1 else -0.5   # Smaller reward for other moves, or -0.5 for a tie
+        reward = 1
 
         # Iterate through all state-action pairs
         for i, (state, action) in enumerate(game.state_action_pairs):
-            reward = final_reward if i == len(game.state_action_pairs) - 1 else base_reward
-            update_q_table(state, action, reward, next_state, game.turns_played)
-        #reward = 5 if winner == 1 else -0.5 # Greater reward for winning. Winning is rare and needs to be celebrated! -0.5 means a tie.
+            #given_reward =  reward * ((i+1) / len(game.state_action_pairs)) This would be a scaled reward based on distance from choice.
+            given_reward = reward
+            update_q_table(state, action, given_reward, next_state, game.turns_played)
         #for state, action in game.state_action_pairs:
         #    update_q_table(state, action, reward, next_state, game.turns_played)
         record_game_stats(game_id, game.turns_played, int(winner))
