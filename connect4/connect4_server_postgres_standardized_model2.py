@@ -30,8 +30,8 @@ CORS(app, origins=["https://ai-experiments-connect4-ui.onrender.com"])
 # trying to ensure logs are flushed.
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
-alpha = 0.6 # Learns over experiences.
-gamma = 0.4 # Value on future rewards
+alpha = 0.7 # Learns over experiences.
+gamma = 0.3 # Value on future rewards
 epsilon = 0.20 # Randomness
 
 games = {}
