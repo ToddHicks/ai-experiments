@@ -29,7 +29,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 alpha = 0.7 # Learns over experiences.
 
 gamma = 0.3 # Value on future rewards
-epsilon = 0.20 # Randomness
+epsilon = 0.03 # Randomness (was .20)
 
 games = {}
 games_lock = threading.Lock()
