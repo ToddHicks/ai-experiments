@@ -1,12 +1,8 @@
-
 '''
 This version will work on optimizing the model so ties net no change in score.
-Loses at a full board also net no change (for now, should be some small negative. -0.001, I think this can be achieved
-), by making losings rewards -0.001. Winning is 1.
-Loses otherwise net (42-turn) * -0.01 Losing on turn 7 should net -0.35
-Winning should give the reward of 5. 
 The previous version has a situation where long games net a positive score, but not a winning strategy.
 So at some point, the computer will not care about losing. Losing should always have a penalty.
+I've stepped away from how the Q_model typically uses next max q, and instead use the value by percentage against gammma and current.
 '''
 import argparse
 import logging
@@ -29,8 +25,9 @@ CORS(app, origins=["https://ai-experiments-connect4-ui.onrender.com"])
 
 # trying to ensure logs are flushed.
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-
+# We already take steps to reward longer games, so I wanted to ensure a quick loss is punished.
 alpha = 0.7 # Learns over experiences.
+
 gamma = 0.3 # Value on future rewards
 epsilon = 0.20 # Randomness
 
@@ -111,7 +108,6 @@ def update_q_table(state, action, reward, next_state, turns_played):
     non_zero_q_values = [q for q in q_values if q != 0.0]
     max_next_q = max(non_zero_q_values) if non_zero_q_values else reward
 
-
     q_row = session.query(QTable).filter_by(state=state).first()
     if not q_row:
         q_row = QTable(state=state)
@@ -121,13 +117,6 @@ def update_q_table(state, action, reward, next_state, turns_played):
     if max_next_q == 0: 
         max_next_q = reward
     new_q = current_q * (1-alpha) + alpha * (reward * (1-gamma) + gamma * max_next_q)
-    if current_q == 0.0:
-        new_q = new_q
-    elif new_q > current_q:
-        new_q = (new_q + current_q) / 2
-    else:
-        new_q = current_q - 0.01 #Only add slight penalties.
-
     print(f'reward: {reward}, max_next_q: {max_next_q}, current_q: {current_q}, new_q: {new_q}')
     setattr(q_row, f'action{action}', new_q)
 
