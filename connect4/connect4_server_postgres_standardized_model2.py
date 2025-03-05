@@ -148,7 +148,7 @@ def choose_action(game):
         controlled_exploration = random.uniform(0, 1) < controlled_random
         if controlled_exploration:
             # Get Q-values for each available move
-            q_values = [(col, getattr(next_q_row, f'action{col}', 0.0)) for col in available_moves]
+            q_values = {action: get_q_value(state, action) for action in available_moves}
             # Sort by Q-value in descending order
             sorted_moves = sorted(q_values, key=lambda x: x[1], reverse=True)
             # Get the 2nd, 3rd, and 4th highest moves (indices 1 to 3 after sorting)
