@@ -203,8 +203,8 @@ def set_random():
         return jsonify({"error": "Invalid input"}), 422
     global epsilon, controlled_random
     try:
-        epsilon = int(data['epsilon'])
-        controlled_random = int(data['controlled_random'])
+        epsilon = float(data['epsilon'])
+        controlled_random = float(data['controlled_random'])
     except Exception as e:
         print(f'Error: {e}')
         return jsonify({"error": "Invalid input"}), 422
