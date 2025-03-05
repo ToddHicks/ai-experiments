@@ -208,6 +208,10 @@ def set_random():
     except Exception as e:
         print(f'Error: {e}')
         return jsonify({"error": "Invalid input"}), 422
+    return jsonify({
+        "epsiolon": epsilon,
+        "controlled_random": controlled_random
+    }) 
     
 @app.route('/random', methods=['GET'])
 def get_random():
