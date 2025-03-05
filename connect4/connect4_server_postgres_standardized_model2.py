@@ -150,7 +150,7 @@ def choose_action(game):
             # Get Q-values for each available move
             q_values = {action: get_q_value(state, action) for action in available_moves}
             # Sort by Q-value in descending order
-            sorted_moves = sorted(q_values, key=lambda x: x[1], reverse=True)
+            sorted_moves = sorted(q_values.items(), key=lambda x: x[1], reverse=True)
             # Get the 2nd, 3rd, and 4th highest moves (indices 1 to 3 after sorting)
             top_moves = [move[0] for move in sorted_moves[1:4]]
             # Randomly select one of these moves
