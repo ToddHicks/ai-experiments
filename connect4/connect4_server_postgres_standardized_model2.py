@@ -29,7 +29,8 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 alpha = 0.7 # Learns over experiences.
 
 gamma = 0.3 # Value on future rewards
-epsilon = 0.03 # Randomness (was .20)
+epsilon = 0.10 # Randomness (was .20)
+controlled_random = 0.5 # Percent of randomness is limited to 2,4th best options. (2,3,4)
 
 games = {}
 games_lock = threading.Lock()
@@ -144,9 +145,22 @@ def choose_action(game):
         print(f'Turn: {game.turns_played} Choice: {choice} \nLogic: {q_values} \nState: {state}')
         return choice
     else:
-        choice = random.choice(available_moves)
-        print(f'Turn: {game.turns_played} Random Choice: {choice}')
-        return choice
+        controlled_exploration = random.uniform(0, 1) < controlled_random
+        if controlled_exploration:
+            # Get Q-values for each available move
+            q_values = [(col, getattr(next_q_row, f'action{col}', 0.0)) for col in available_moves]
+            # Sort by Q-value in descending order
+            sorted_moves = sorted(q_values, key=lambda x: x[1], reverse=True)
+            # Get the 2nd, 3rd, and 4th highest moves (indices 1 to 3 after sorting)
+            top_moves = [move[0] for move in sorted_moves[1:4]]
+            # Randomly select one of these moves
+            choice = random.choice(top_moves)
+            print(f"2nd-4th highest moves: {top_moves}, Chosen move: {choice}")
+            return choice
+        else: 
+            choice = random.choice(available_moves)
+            print(f'Turn: {game.turns_played} Random Choice: {choice}')
+            return choice
 
 def drop_piece(board, col, piece):
     for row in range(5, -1, -1):
@@ -181,6 +195,26 @@ def create_game():
         board = games[game_id].board.tolist()
         game_count =+ 1
         return jsonify({"message": "New Connect 4 game created!", "game_id": game_id, "board": board})
+
+@app.route('/random', methods=['POST'])
+def set_random():
+    data = request.json
+    if not data:
+        return jsonify({"error": "Invalid input"}), 422
+    global epsilon, controlled_random
+    try:
+        epsilon = int(data['epsilon'])
+        controlled_random = int(data['controlled_random'])
+    except Exception as e:
+        print(f'Error: {e}')
+        return jsonify({"error": "Invalid input"}), 422
+    
+@app.route('/random', methods=['GET'])
+def get_random():
+   return jsonify({
+        "epsiolon": epsilon,
+        "controlled_random": controlled_random
+    }) 
 
 @app.route('/act_connect4', methods=['POST'])
 def take_turn():
