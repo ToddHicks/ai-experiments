@@ -258,8 +258,8 @@ def take_turn():
         is_ai_turn = False  # Start with AI's last move since the player just won
 
         for state, action in reversed(game.state_action_pairs):
-            update_q_table(state, action, mod_reward, state, game.turns_played)
             mod_reward = reward / count
+            update_q_table(state, action, mod_reward, state, game.turns_played)
             if is_ai_turn:  # Only adjust the reward every other turn (AI's moves)
                 count += 1
             is_ai_turn = not is_ai_turn  # Alternate turns
