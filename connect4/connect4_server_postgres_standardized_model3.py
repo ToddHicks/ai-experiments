@@ -246,7 +246,7 @@ def take_turn():
         return jsonify({"error": "Invalid move"}), 400
 
     # Get current state and record player's move
-    state = get_state(game.board)
+    next_state = get_state(game.board)
     game.state_action_pairs.append((state, move))
     game.turns_played += 1
 
@@ -262,7 +262,8 @@ def take_turn():
         for state, action in reversed(game.state_action_pairs):
             # Linearly interpolate between max_penalty and min_penalty
             mod_reward = reward + (min_penalty - reward) * ((count - 1) / (max_count - 1))
-            update_q_table(state, action, mod_reward, state, game.turns_played)
+            update_q_table(state, action, mod_reward, next_state, game.turns_played)
+            next_state = state
             if is_ai_turn:  # Only adjust the reward every other turn (AI's moves)
                 count += 1
             is_ai_turn = not is_ai_turn  # Alternate turns
@@ -291,7 +292,8 @@ def take_turn():
         for state, action in reversed(game.state_action_pairs):
             # Linearly interpolate between reward and min_reward
             mod_reward = reward + (min_reward - reward) * ((count - 1) / (max_count - 1))
-            update_q_table(state, action, mod_reward, state, game.turns_played)
+            update_q_table(state, action, mod_reward, next_state, game.turns_played)
+            next_state = state
             if is_ai_turn:  # Only adjust the reward every other turn (AI's moves)
                 count += 1
         record_game_stats(game_id, game.turns_played, int(winner))
