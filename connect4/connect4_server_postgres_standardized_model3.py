@@ -258,10 +258,10 @@ def take_turn():
         is_ai_turn = False  # Start with AI's last move since the player just won
 
         for state, action in reversed(game.state_action_pairs):
-            if is_ai_turn:  # Only adjust the reward every other turn (AI's moves)
-                mod_reward = reward / count
-                count += 1
             update_q_table(state, action, mod_reward, state, game.turns_played)
+            mod_reward = reward / count
+            if is_ai_turn:  # Only adjust the reward every other turn (AI's moves)
+                count += 1
             is_ai_turn = not is_ai_turn  # Alternate turns
         with games_lock:
             del games[game_id]
@@ -283,10 +283,10 @@ def take_turn():
 
         # Iterate through all state-action pairs
         for state, action in reversed(game.state_action_pairs):
-            if is_ai_turn:  # Only adjust the reward every other turn (AI's moves)
-                mod_reward = reward / count
-                count += 1
+            mod_reward = reward / count
             update_q_table(state, action, mod_reward, state, game.turns_played)
+            if is_ai_turn:  # Only adjust the reward every other turn (AI's moves)
+                count += 1
         record_game_stats(game_id, game.turns_played, int(winner))
         with games_lock:
             del games[game_id]
