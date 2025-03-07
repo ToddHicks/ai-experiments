@@ -256,9 +256,12 @@ def take_turn():
         reward = -1  # Player win = bad for AI
         count = 1  # For scaling penalties on AI turns
         is_ai_turn = False  # Start with AI's last move since the player just won
+        max_count = 21  # Max AI moves possible
+        min_penalty = -0.1  # Smallest negative penalty for the first move
 
         for state, action in reversed(game.state_action_pairs):
-            mod_reward = reward / count
+            # Linearly interpolate between max_penalty and min_penalty
+            mod_reward = reward + (min_penalty - reward) * ((count - 1) / (max_count - 1))
             update_q_table(state, action, mod_reward, state, game.turns_played)
             if is_ai_turn:  # Only adjust the reward every other turn (AI's moves)
                 count += 1
@@ -281,10 +284,13 @@ def take_turn():
         reward = 1
         count = 1 # Counting the turns it took to finish the game.
         is_ai_turn = True  # Start with AI's last move since the player just won, need to wait a moment.
+        max_count = 21  # Max AI moves possible
+        min_reward = 0.1  # Smallest negative penalty for the first move
 
         # Iterate through all state-action pairs
         for state, action in reversed(game.state_action_pairs):
-            mod_reward = reward / count
+            # Linearly interpolate between reward and min_reward
+            mod_reward = reward + (min_reward - reward) * ((count - 1) / (max_count - 1))
             update_q_table(state, action, mod_reward, state, game.turns_played)
             if is_ai_turn:  # Only adjust the reward every other turn (AI's moves)
                 count += 1
