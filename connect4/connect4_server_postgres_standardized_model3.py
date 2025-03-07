@@ -263,6 +263,7 @@ def take_turn():
             if is_ai_turn:  # Only adjust the reward every other turn (AI's moves)
                 count += 1
             is_ai_turn = not is_ai_turn  # Alternate turns
+        record_game_stats(game_id, game.turns_played, int(winner))
         with games_lock:
             del games[game_id]
         return jsonify({"message": "Game over!", "board": game.board.tolist(), "winner": int(winner)})
