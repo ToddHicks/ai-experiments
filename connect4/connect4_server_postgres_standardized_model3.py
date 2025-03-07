@@ -254,15 +254,15 @@ def take_turn():
     winner = check_winner(game.board)
     if winner is not None:
         reward = -1  # Player win = bad for AI
-        count = 1 # Counting the turns it took to finish the game.
+        count = 1  # For scaling penalties on AI turns
+        is_ai_turn = False  # Start with AI's last move since the player just won
+
         for state, action in reversed(game.state_action_pairs):
-            mod_reward = reward / count
-            count+=1
-            update_q_table(state, action, mod_reward, state, game.turns_played)
-        record_game_stats(game_id, game.turns_played, int(winner))
-        with games_lock:
-            del games[game_id]
-        return jsonify({"message": "Game over!", "board": game.board.tolist(), "winner": int(winner)})
+            if is_ai_turn:  # Only adjust the reward every other turn (AI's moves)
+                mod_reward = reward / count
+                update_q_table(state, action, mod_reward, state, game.turns_played)
+                count += 1
+            is_ai_turn = not is_ai_turn  # Alternate turns
 
     # AI takes a turn
     ai_move = choose_action(game)
@@ -276,11 +276,14 @@ def take_turn():
     if winner is not None:
         reward = 1
         count = 1 # Counting the turns it took to finish the game.
+        is_ai_turn = True  # Start with AI's last move since the player just won, need to wait a moment.
 
         # Iterate through all state-action pairs
         for state, action in reversed(game.state_action_pairs):
-            mod_reward = reward / count
-            update_q_table(state, action, mod_reward, next_state, game.turns_played)
+            if is_ai_turn:  # Only adjust the reward every other turn (AI's moves)
+                mod_reward = reward / count
+                update_q_table(state, action, mod_reward, state, game.turns_played)
+                count += 1
         record_game_stats(game_id, game.turns_played, int(winner))
         with games_lock:
             del games[game_id]
