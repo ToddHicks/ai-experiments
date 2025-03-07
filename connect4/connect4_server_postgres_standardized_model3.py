@@ -247,7 +247,7 @@ def take_turn():
 
     # Get current state and record player's move
     next_state = get_state(game.board)
-    game.state_action_pairs.append((state, move))
+    game.state_action_pairs.append((next_state, move))
     game.turns_played += 1
 
     # Check if player won
@@ -277,7 +277,7 @@ def take_turn():
     drop_piece(game.board, ai_move, 1)
     next_state = get_state(game.board)
     game.turns_played += 1
-    game.state_action_pairs.append((state, ai_move))  # Use current state for AI's action
+    game.state_action_pairs.append((next_state, ai_move))  # Use current state for AI's action
 
     # Check if AI won
     winner = check_winner(game.board)
