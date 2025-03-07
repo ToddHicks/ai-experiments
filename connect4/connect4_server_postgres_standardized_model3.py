@@ -263,6 +263,9 @@ def take_turn():
                 update_q_table(state, action, mod_reward, state, game.turns_played)
                 count += 1
             is_ai_turn = not is_ai_turn  # Alternate turns
+        with games_lock:
+            del games[game_id]
+        return jsonify({"message": "Game over!", "board": game.board.tolist(), "winner": int(winner)})
 
     # AI takes a turn
     ai_move = choose_action(game)
