@@ -107,7 +107,6 @@ def get_q_value(state, action):
 
 def update_q_table(state, action, reward):
     session = Session()
-    
 
     q_row = session.query(QTable).filter_by(state=state).first()
     if not q_row:
@@ -235,6 +234,7 @@ def take_turn():
 
     # Get current state and record player's move
     state = get_state(game.board)
+    print(f'Setting Player {move} to {state}')
     game.state_action_pairs.append((state, move))
     game.turns_played += 1
 
@@ -250,6 +250,7 @@ def take_turn():
         for state, action in reversed(game.state_action_pairs):
             # Linearly interpolate between max_penalty and min_penalty
             mod_reward = reward + (min_penalty - reward) * ((count - 1) / (max_count - 1))
+            print(f'Player Wins: {mod_reward} : {action} : {state}')
             update_q_table(state, action, mod_reward)
             if is_ai_turn:  # Only adjust the reward every other turn (AI's moves)
                 count += 1
@@ -264,6 +265,7 @@ def take_turn():
     drop_piece(game.board, ai_move, 1)
     state = get_state(game.board)
     game.turns_played += 1
+    print(f'Setting AI {ai_move} to {state}')
     game.state_action_pairs.append((state, ai_move))  # Use current state for AI's action
 
     # Check if AI won
