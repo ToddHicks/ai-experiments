@@ -250,7 +250,7 @@ def take_turn():
         for state, action in reversed(game.state_action_pairs):
             # Linearly interpolate between max_penalty and min_penalty
             mod_reward = reward + (min_penalty - reward) * ((count - 1) / (max_count - 1))
-            print(f'Player Wins: {mod_reward} : {action} : {state}')
+            # print(f'Player Wins: {mod_reward} : {action} : {state}')
             update_q_table(state, action, mod_reward)
             if is_ai_turn:  # Only adjust the reward every other turn (AI's moves)
                 count += 1
