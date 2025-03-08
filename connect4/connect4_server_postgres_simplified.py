@@ -115,8 +115,6 @@ def update_q_table(state, action, reward):
         session.add(q_row)
 
     current_q = getattr(q_row, f'action{action}', 0.0) or 0.0
-    if max_next_q == 0: 
-        max_next_q = reward
     new_q = current_q * (1-alpha) + alpha * reward
     print(f'reward: {reward}, current_q: {current_q}, new_q: {new_q}')
     setattr(q_row, f'action{action}', new_q)
