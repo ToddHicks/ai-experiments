@@ -225,6 +225,7 @@ def take_turn():
 
     game_id = data['game_id']
     game = games.get(game_id)
+    state = get_state(game.board)
     if not game:
         return jsonify({"error": "Game not found"}), 404
 
@@ -233,8 +234,7 @@ def take_turn():
         return jsonify({"error": "Invalid move"}), 400
 
     # Get current state and record player's move
-    state = get_state(game.board)
-    print(f'Setting Player {move} to {state}')
+    # print(f'Setting Player {move} to {state}')
     game.state_action_pairs.append((state, move))
     game.turns_played += 1
 
@@ -261,11 +261,11 @@ def take_turn():
         return jsonify({"message": "Game over!", "board": game.board.tolist(), "winner": int(winner)})
 
     # AI takes a turn
+    state = get_state(game.board)
     ai_move = choose_action(game)
     drop_piece(game.board, ai_move, 1)
-    state = get_state(game.board)
     game.turns_played += 1
-    print(f'Setting AI {ai_move} to {state}')
+    # print(f'Setting AI {ai_move} to {state}')
     game.state_action_pairs.append((state, ai_move))  # Use current state for AI's action
 
     # Check if AI won
